@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>발전소 석탄 입찰 평가 시스템 | KCHenergy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="config.js"></script>
+    <script src="api.js"></script>
+</head>
+<body>
+    <!-- 로그인 오버레이 -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>🏭 발전소 석탄 입찰 평가 시스템</h2>
+            <p>계속하려면 이메일을 입력하세요</p>
+            <input type="email" id="loginEmail" placeholder="your.name@kchenergy.com">
+            <button class="btn btn-primary" onclick="handleLogin()">시스템 진입</button>
+            <p class="login-hint">힌트: 회사 이메일로 로그인하세요</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 상단 헤더 -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🏭 발전소 석탄 입찰 평가 시스템</h1>
+                <span class="subtitle">Coal Procurement Bid Evaluation Tool</span>
+            </div>
+            <div class="header-right">
+                <span class="sync-status" id="syncStatus">
+                    <span class="sync-dot offline"></span>
+                    <span>로컬 모드</span>
+                </span>
+                <span class="user-badge" id="userBadge">
+                    <span class="user-email" id="userEmail">--</span>
+                    <span class="admin-tag" id="adminTag" style="display:none;">관리자</span>
+                </span>
+                <span class="company-badge">KCHenergy</span>
+                <span class="date-display" id="currentDate"></span>
+            </div>
+        </header>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 왼쪽 패널: 기준 설정 -->
+            <aside class="sidebar">
+                <!-- 발전사 선택 -->
+                <section class="panel genco-panel">
+                    <h2>🏢 발전사 선택</h2>
+                    <select id="gencoSelect">
+                        <option value="kospo">KOSPO (남부발전)</option>
+                        <option value="koen">KOEN (남동발전)</option>
+                        <option value="kowepo">KOWEPO (서부발전)</option>
+                        <option value="komipo">KOMIPO (중부발전)</option>
+                        <option value="ewp">EWP (동서발전)</option>
+                        <option value="koenipp">KOEN IPP</option>
+                        <option value="gsg">GSG</option>
+                        <option value="posco">POSCO</option>
+                        <option value="custom">사용자 정의 계수</option>
+                    </select>
+                    <div class="penalty-coefficients">
+                        <h4>페널티 계수</h4>
+                        <div class="coef-grid">
+                            <div class="coef-item">
+                                <label>Sulfur</label>
+                                <input type="number" id="coefSulfur" value="2.92" step="0.01">
+                            </div>
+                            <div class="coef-item">
+                                <label>Ash</label>
+                                <input type="number" id="coefAsh" value="0.07" step="0.001">
+                            </div>
+                            <div class="coef-item">
+                                <label>Nitrogen</label>
+                                <input type="number" id="coefNitrogen" value="0.25" step="0.01">
+                            </div>
+                            <div class="coef-item">
+                                <label>P/C</label>
+                                <input type="number" id="coefPC" value="0.61" step="0.01">
+                            </div>
+                            <div class="coef-item">
+                                <label>Carbon</label>
+                                <input type="number" id="coefCarbon" value="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ICI 기준 설정 -->
+                <section class="panel ici-panel">
+                    <div class="panel-header-inline">
+                        <h2>📊 ICI 기준 (Baseline)</h2>
+                        <button class="btn btn-small btn-sync" onclick="syncICIFromCloud()" title="클라우드에서 동기화">🔄</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>FOBT (USD/MT)</label>
+                            <input type="number" id="iciFOBT" value="72.63" step="0.01">
+                        </div>
+                        <div class="form-group half">
+                            <label>Freight (USD/MT)</label>
+                            <input type="number" id="iciFreight" value="8.47" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Sulfur (%)</label>
+                            <input type="number" id="iciSulfur" value="0.40" step="0.01">
+                        </div>
+                        <div class="form-group half">
+                            <label>Ash (%)</label>
+                            <input type="number" id="iciAsh" value="6.00" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Nitrogen (%)</label>
+                            <input type="number" id="iciNitrogen" value="1.50" step="0.01">
+                        </div>
+                        <div class="form-group half">
+                            <label>NAR (kcal/kg)</label>
+                            <input type="number" id="iciNAR" value="4600" step="10">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Consumption Tax (₩)</label>
+                            <input type="number" id="consumptionTaxKRW" value="46000" step="100">
+                        </div>
+                        <div class="form-group half">
+                            <label>환율 (₩/USD)</label>
+                            <input type="number" id="exchangeRate" value="1450" step="1">
+                        </div>
+                    </div>
+                    <div class="ici-result">
+                        <div class="ici-result-row">
+                            <span>Consumption Tax (USD):</span>
+                            <strong id="consumptionTaxUSD">31.72</strong>
+                        </div>
+                        <div class="ici-result-row highlight">
+                            <span>ICI 기준 평가상:</span>
+                            <strong id="iciEvaluation">155.49</strong>
+                        </div>
+                    </div>
+                    <button class="btn btn-save btn-full admin-only" onclick="saveICIToCloud()" style="margin-top:10px;">
+                        💾 ICI 기준을 클라우드에 저장
+                    </button>
+                </section>
+
+                <!-- 배치 관리 -->
+                <section class="panel batch-panel">
+                    <h2>📁 저장 및 관리</h2>
+                    <div class="form-group">
+                        <label>배치/초안 이름</label>
+                        <input type="text" id="batchName" placeholder="예: 2026-03 KOEN 1차">
+                    </div>
+                    
+                    <div class="save-section">
+                        <h4>💾 개인 초안</h4>
+                        <p class="hint">본인만 볼 수 있음, 테스트 및 시뮬레이션용</p>
+                        <div class="batch-actions">
+                            <button class="btn btn-save" onclick="saveDraft()">초안 저장</button>
+                            <button class="btn btn-load" onclick="showDraftsModal()">초안 불러오기</button>
+                        </div>
+                    </div>
+                    
+                    <div class="save-section admin-only" id="officialSection">
+                        <h4>📋 공식 입찰 평가</h4>
+                        <p class="hint">팀 공유, 입찰 전 최종 버전</p>
+                        <div class="batch-actions">
+                            <button class="btn btn-primary" onclick="saveOfficialBid()">공식 평가 생성</button>
+                            <button class="btn btn-load" onclick="showOfficialBidsModal()">이력 조회</button>
+                        </div>
+                    </div>
+                    
+                    <div class="batch-actions" style="margin-top:15px;">
+                        <button class="btn btn-compare" onclick="showCompareModal()">📈 배치 비교</button>
+                        <button class="btn btn-export" onclick="exportToExcel()">📊 Excel 내보내기</button>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- 오른쪽 메인 영역: 평가표 -->
+            <div class="main-area">
+                <section class="panel evaluation-panel">
+                    <div class="panel-header">
+                        <h2>⚖️ 입찰 평가표</h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-add" onclick="addMineRow()">➕ Bidder 추가</button>
+                            <button class="btn btn-clear" onclick="clearAllRows()">🗑️ 전체 삭제</button>
+                            <button class="btn btn-recalc" onclick="recalculateAll()">🔄 재계산</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="eval-table" id="evalTable">
+                            <thead>
+                                <tr>
+                                    <th class="col-action">작업</th>
+                                    <th class="col-mine">Bidder</th>
+                                    <th class="col-num">FOBT<br>(USD/MT)</th>
+                                    <th class="col-num">Freight<br>(USD/MT)</th>
+                                    <th class="col-num">Sulfur<br>(%)</th>
+                                    <th class="col-num">Ash<br>(%)</th>
+                                    <th class="col-num">Nitrogen<br>(%)</th>
+                                    <th class="col-num">NAR<br>(kcal/kg)</th>
+                                    <th class="col-result">CFR</th>
+                                    <th class="col-result">Penalty</th>
+                                    <th class="col-result">Evaluation</th>
+                                    <th class="col-result highlight">평가상</th>
+                                </tr>
+                            </thead>
+                            <tbody id="evalTableBody">
+                                <!-- 동적 행 추가 -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 요약 영역 -->
+                    <div class="summary-section">
+                        <div class="summary-card best">
+                            <span class="label">🏆 최적 입찰</span>
+                            <span class="value" id="bestBid">--</span>
+                            <span class="detail" id="bestDetail">--</span>
+                        </div>
+                        <div class="summary-card baseline">
+                            <span class="label">🥇 1등 평가상</span>
+                            <span class="value" id="bestDeltaValue">--</span>
+                        </div>
+                        <div class="summary-card count">
+                            <span class="label">📝 유효 입찰 수</span>
+                            <span class="value" id="bidCount">0</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 광산 데이터베이스 -->
+                <section class="panel mine-db-panel">
+                    <div class="panel-header">
+                        <h2>🗄️ 광산 데이터베이스 <span class="hint">(클릭하여 빠른 추가)</span></h2>
+                        <button class="btn btn-small" onclick="showAddMineDBModal()">➕ 광산 추가</button>
+                    </div>
+                    <div class="mine-db-list" id="mineDBList">
+                        <!-- 동적 채우기 -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- 모달: 개인 초안 -->
+    <div class="modal" id="draftsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📂 내 초안</h3>
+                <button class="modal-close" onclick="closeModal('draftsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="batch-list" id="draftsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달: 공식 입찰 이력 -->
+    <div class="modal" id="officialBidsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>📋 공식 입찰 평가 기록</h3>
+                <button class="modal-close" onclick="closeModal('officialBidsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="batch-list" id="officialBidsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달: 배치 비교 -->
+    <div class="modal" id="compareModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>📈 배치 비교 분석</h3>
+                <button class="modal-close" onclick="closeModal('compareModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="compare-selectors">
+                    <div class="compare-select">
+                        <label>배치 A</label>
+                        <select id="compareBatchA"></select>
+                    </div>
+                    <div class="compare-vs">VS</div>
+                    <div class="compare-select">
+                        <label>배치 B</label>
+                        <select id="compareBatchB"></select>
+                    </div>
+                    <button class="btn btn-primary" onclick="runComparison()">비교</button>
+                </div>
+                <div class="compare-results" id="compareResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달: 광산 데이터베이스에 추가 -->
+    <div class="modal" id="addMineDBModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ 광산 데이터베이스에 추가</h3>
+                <button class="modal-close" onclick="closeModal('addMineDBModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>광산명</label>
+                    <input type="text" id="newMineName" placeholder="예: Adaro Indonesia">
+                </div>
+                <div class="form-group">
+                    <label>공급업체</label>
+                    <input type="text" id="newMineSupplier" placeholder="예: PT Adaro Energy">
+                </div>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>기준 NAR (kcal/kg)</label>
+                        <input type="number" id="newMineNAR" value="4200">
+                    </div>
+                    <div class="form-group half">
+                        <label>기준 Sulfur (%)</label>
+                        <input type="number" id="newMineSulfur" value="0.10" step="0.01">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>기준 Ash (%)</label>
+                        <input type="number" id="newMineAsh" value="5.00" step="0.01">
+                    </div>
+                    <div class="form-group half">
+                        <label>기준 Nitrogen (%)</label>
+                        <input type="number" id="newMineNitrogen" value="0.80" step="0.01">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addMineToDatabase()">추가</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 메시지 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
