@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>발전소 석탄 입찰 평가 시스템 | KCHenergy</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="config.js"></script>
     <script src="api.js"></script>
 </head>
@@ -14,10 +14,10 @@
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
             <h2>🏭 발전소 석탄 입찰 평가 시스템</h2>
-            <p>계속하려면 이메일을 입력하세요</p>
+            <p>권한이 있는 사용자만 접속 가능합니다</p>
             <input type="email" id="loginEmail" placeholder="your.name@kchenergy.com">
-            <button class="btn btn-primary" onclick="handleLogin()">시스템 진입</button>
-            <p class="login-hint">힌트: 회사 이메일로 로그인하세요</p>
+            <button class="btn btn-primary" onclick="handleLogin()">로그인</button>
+            <p class="login-hint">권한이 없는 계정은 접속이 거부됩니다</p>
         </div>
     </div>
 
@@ -37,6 +37,7 @@
                     <span class="user-email" id="userEmail">--</span>
                     <span class="admin-tag" id="adminTag" style="display:none;">관리자</span>
                 </span>
+                <button class="btn btn-small btn-logout" onclick="handleLogout()">로그아웃</button>
                 <span class="company-badge">KCHenergy</span>
                 <span class="date-display" id="currentDate"></span>
             </div>
@@ -233,7 +234,8 @@
                             <span class="value" id="bidCount">0</span>
                         </div>
                     </div>
-                </section>
+                    
+                    </section>
 
                 <!-- 광산 데이터베이스 -->
                 <section class="panel mine-db-panel">

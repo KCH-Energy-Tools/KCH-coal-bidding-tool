@@ -8,6 +8,38 @@
  * 평가상 = Bidder Evaluation - ICI-5000 기준 Evaluation
  */
 
+// ==================== 사용자 권한 설정 ====================
+
+//Authorized users - only these emails can log in
+// admin: can create/edit official bids and modify ICI baseline
+// user: can only view and create personal drafts
+const AUTHORIZED_USERS = {
+    'lechen@kchenergy.com': { name: 'Lechen', role: 'admin' },
+    'eunn29@kchenergy.com': { name: 'Eun', role: 'user' },
+    'jinwooook@kchenergy.com': { name: 'Jinwoo', role: 'user' },
+    'mjk@kchenergy.com': { name: 'MJ', role: 'user' },
+    'jseo@kchenergy.com': { name: 'JSeo', role: 'user' },
+    'sw_jeong@kchenergy.com': { name: 'SW_Jeong', role: 'user' },
+    'jsi@kchenergy.com': { name: 'JSi', role: 'user' },
+    'ojw5710@kchenergy.com': { name: 'Ojw', role: 'user' },
+    'thankbit@kchenergy.com': { name: 'Thankbit', role: 'user' },
+    'khh@kchenergy.com': { name: 'KHH', role: 'user' },
+};
+
+function isAuthorized(email) {
+    return AUTHORIZED_USERS[email.toLowerCase()] !== undefined;
+}
+
+function getUserRole(email) {
+    const user = AUTHORIZED_USERS[email.toLowerCase()];
+    return user ? user.role : null;
+}
+
+function getUserName(email) {
+    const user = AUTHORIZED_USERS[email.toLowerCase()];
+    return user ? user.name : email.split('@')[0];
+}
+
 // ==================== 발전사별 페널티 계수 ====================
 
 const GENCO_COEFFICIENTS = {
@@ -60,22 +92,34 @@ let state = {
 // ==================== 로그인 및 초기화 ====================
 
 async function handleLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
     if (!email || !email.includes('@')) {
         showToast('유효한 이메일 주소를 입력하세요', 'error');
         return;
     }
     
+    // 检查用户是否被授权
+    if (!isAuthorized(email)) {
+        showToast('권한 없음: 접속이 허용된 사용자가 아닙니다', 'error');
+        return;
+    }
+    
+    const userRole = getUserRole(email);
+    const isAdmin = userRole === 'admin';
+    
     localStorage.setItem('coal_user_email', email);
+    localStorage.setItem('coal_user_role', userRole);
+    
     await api.initialize(email);
     
     document.getElementById('loginOverlay').classList.add('hidden');
-    updateUserDisplay(email, api.isAdmin());
+    updateUserDisplay(email, isAdmin, userRole);
     await initializeApp();
 }
 
-function updateUserDisplay(email, isAdmin) {
-    document.getElementById('userEmail').textContent = email;
+function updateUserDisplay(email, isAdmin, role) {
+    const displayName = getUserName(email);
+    document.getElementById('userEmail').textContent = displayName;
     
     if (isAdmin) {
         document.getElementById('adminTag').style.display = 'inline';
@@ -83,6 +127,11 @@ function updateUserDisplay(email, isAdmin) {
             el.classList.add('visible');
         });
     }
+    
+    // 모든 사용자에게 개인 초안 기능 제공
+    document.querySelectorAll('.user-only').forEach(el => {
+        el.classList.add('visible');
+    });
     
     const syncStatus = document.getElementById('syncStatus');
     if (api.isCloudEnabled()) {
@@ -93,12 +142,22 @@ function updateUserDisplay(email, isAdmin) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is already logged in
     const savedEmail = localStorage.getItem('coal_user_email');
-    if (savedEmail) {
+    if (savedEmail && isAuthorized(savedEmail)) {
         document.getElementById('loginEmail').value = savedEmail;
         handleLogin();
     }
 });
+
+// 로그아웃 기능
+function handleLogout() {
+    if (confirm('로그아웃하시겠습니까?')) {
+        localStorage.removeItem('coal_user_email');
+        localStorage.removeItem('coal_user_role');
+        location.reload();
+    }
+}
 
 async function initializeApp() {
     updateDateDisplay();
@@ -228,7 +287,12 @@ function calculateICIEvaluation() {
     // UI 업데이트
     document.getElementById('consumptionTaxUSD').textContent = consumptionTaxUSD.toFixed(2);
     document.getElementById('iciEvaluation').textContent = evaluation.toFixed(2);
-    document.getElementById('baselineEval').textContent = evaluation.toFixed(2);
+    
+    // 安全检查：如果 HTML 中有这个元素才更新
+    const baselineEvalEl = document.getElementById('baselineEval');
+    if (baselineEvalEl) {
+        baselineEvalEl.textContent = evaluation.toFixed(2);
+    }
     
     return evaluation;
 }
@@ -293,9 +357,15 @@ function onGencoChange() {
         document.getElementById('coefCarbon').value = coefficients.carbon;
     }
     
-    // 먼저 ICI 기준 계산, 그 다음 모든 행 재계산
+    // ICI 기준 Evaluation 재계산
     calculateICIEvaluation();
-    state.evaluationRows.forEach(row => calculateRow(row.id));
+    
+    // 모든 행 재계산
+    state.evaluationRows.forEach(row => {
+        calculateRow(row.id);
+    });
+    
+    // 하이라이트 및 요약 업데이트
     highlightBestAndWorst();
     updateSummary();
 }
@@ -587,6 +657,8 @@ function updateSummary() {
     document.getElementById('bestDetail').textContent = `평가상: ${best.delta.toFixed(2)} | Evaluation: ${best.evaluation.toFixed(2)}`;
     document.getElementById('bestDeltaValue').textContent = best.delta.toFixed(2);
 }
+
+// Debug function removed
 
 // ==================== 광산 데이터베이스 ====================
 
@@ -1012,67 +1084,128 @@ async function runComparison() {
     document.getElementById('compareResults').innerHTML = html;
 }
 
-// ==================== Excel 내보내기 ====================
-
+// ==================== Excel导出 (精确还原共同入札图表布局) ====================
 function exportToExcel() {
     const wb = XLSX.utils.book_new();
-    const gencoName = document.getElementById('gencoSelect').options[document.getElementById('gencoSelect').selectedIndex].text;
     
-    const headerData = [
-        ['발전소 석탄 입찰 평가표'],
-        [''],
-        ['발전사', gencoName],
-        [''],
-        ['ICI-5000 기준'],
-        ['FOBT (USD/MT)', document.getElementById('iciFOBT').value],
-        ['Freight (USD/MT)', document.getElementById('iciFreight').value],
-        ['Sulfur (%)', document.getElementById('iciSulfur').value],
-        ['Ash (%)', document.getElementById('iciAsh').value],
-        ['Nitrogen (%)', document.getElementById('iciNitrogen').value],
-        ['NAR (kcal/kg)', document.getElementById('iciNAR').value],
-        ['Consumption Tax (₩)', document.getElementById('consumptionTaxKRW').value],
-        ['환율 (₩/USD)', document.getElementById('exchangeRate').value],
-        ['Consumption Tax (USD)', document.getElementById('consumptionTaxUSD').textContent],
-        ['기준 Evaluation', document.getElementById('iciEvaluation').textContent],
-        [''],
-        ['페널티 계수'],
-        ['Sulfur', document.getElementById('coefSulfur').value],
-        ['Ash', document.getElementById('coefAsh').value],
-        ['Nitrogen', document.getElementById('coefNitrogen').value],
-        ['P/C', document.getElementById('coefPC').value],
-        ['Carbon', document.getElementById('coefCarbon').value]
+    // 严格按照图中的发电厂顺序：EWP, KOEN, KOWEPO, KOMIPO, KOSPO
+    const targetGencos = ['ewp', 'koen', 'kowepo', 'komipo', 'kospo'];
+    
+    // 获取页面基础参数
+    const fobt = parseFloat(document.getElementById('iciFOBT').value) || 0;
+    const freight = parseFloat(document.getElementById('iciFreight').value) || 0;
+    const sulfur = parseFloat(document.getElementById('iciSulfur').value) || 0;
+    const ash = parseFloat(document.getElementById('iciAsh').value) || 0;
+    const nitrogen = parseFloat(document.getElementById('iciNitrogen').value) || 0;
+    const nar = parseFloat(document.getElementById('iciNAR').value) || 5000;
+    const rate = document.getElementById('exchangeRate').value || '1450';
+    const taxUSD = document.getElementById('consumptionTaxUSD').textContent || '31.72';
+    const iciCfr = fobt + freight;
+    
+    // 预计算 ICI-5000 在各大发电厂的 Evaluation 基准值
+    const iciEvaluations = {};
+    targetGencos.forEach(gKey => {
+        const coefs = GENCO_COEFFICIENTS[gKey];
+        const penalty = (sulfur * coefs.sulfur) + (ash * coefs.ash) + (nitrogen * coefs.nitrogen);
+        iciEvaluations[gKey] = (iciCfr + penalty + coefs.pc + parseFloat(taxUSD)) * (6080 / nar);
+    });
+    
+    // 1. 构建顶部参数行 (与截图一致)
+    const exportData = [
+        ['공동입찰 종합결과'], // 行1: 大标题
+        [], // 行2: 空行
+        // 行3: 汇率与消费税
+        ['', `적용환율 (원/$): ${Number(rate).toLocaleString()}`, '', '', '', '', `소비세 ($/mt): ${parseFloat(taxUSD).toFixed(2)}`]
     ];
     
-    const evalData = [
-        ['입찰 평가표'],
-        ['Bidder', 'FOBT (USD/MT)', 'Freight (USD/MT)', 'Sulfur (%)', 'Ash (%)', 'Nitrogen (%)', 'NAR (kcal/kg)', 'CFR', 'Penalty', 'Evaluation', '평가상'],
-        ...state.evaluationRows.map(r => [
-            r.mineName || '이름 없음',
-            r.fobt,
-            r.freight,
-            r.sulfur,
-            r.ash,
-            r.nitrogen,
-            r.nar,
-            r.cfr?.toFixed(2) || '',
-            r.penalty?.toFixed(2) || '',
-            r.evaluation?.toFixed(2) || '',
-            r.delta?.toFixed(2) || ''
-        ])
+    // 2. 构建复合表头 (行4 和 行5)
+    const headerRow1 = ['No.', 'Bidder', 'Supplier', 'Mine', 'NAR\n(kcal/kg)', 'FOBT\n($/ton)', 'Freight\n($/ton)', 'CFR\n($/ton)'];
+    const headerRow2 = ['', '', '', '', '', '', '', ''];
+    targetGencos.forEach(gKey => {
+        headerRow1.push(gKey.toUpperCase(), '');
+        headerRow2.push('Evaluation', '평가상(Delta)');
+    });
+    exportData.push(headerRow1, headerRow2);
+    
+    // 3. 插入固定第一行数据: ICI-5000 (行6)
+    const iciRow = [1, 'ICI-5000', 'ICI-5000', 'ICI-5000', nar, fobt.toFixed(2), freight.toFixed(2), iciCfr.toFixed(2)];
+    targetGencos.forEach(gKey => {
+        iciRow.push(iciEvaluations[gKey].toFixed(2), '0.00');
+    });
+    exportData.push(iciRow);
+    
+    // 4. 遍历插入所有 Bidder 的数据
+    state.evaluationRows.forEach((row, index) => {
+        const mineInfo = state.mineDatabase.find(m => m.id === row.mineId) || {};
+        const supplier = mineInfo.supplier || row.mineName || '';
+        const mineName = row.mineName || '';
+        const rFobt = parseFloat(row.fobt) || 0;
+        const rFreight = parseFloat(row.freight) || 0;
+        const rowCfr = row.cfr !== null ? row.cfr : (rFobt + rFreight);
+        
+        const dataRow = [
+            index + 2,
+            mineName,
+            supplier,
+            mineName,
+            row.nar || '',
+            rFobt ? rFobt.toFixed(2) : '',
+            rFreight ? rFreight.toFixed(2) : '',
+            rowCfr ? rowCfr.toFixed(2) : ''
+        ];
+        
+        targetGencos.forEach(gKey => {
+            if (!row.nar || row.nar <= 0) {
+                dataRow.push('--', '--');
+                return;
+            }
+            const coefs = GENCO_COEFFICIENTS[gKey];
+            const rSulfur = parseFloat(row.sulfur) || 0;
+            const rAsh = parseFloat(row.ash) || 0;
+            const rNitrogen = parseFloat(row.nitrogen) || 0;
+            const penalty = (rSulfur * coefs.sulfur) + (rAsh * coefs.ash) + (rNitrogen * coefs.nitrogen);
+            const evaluation = (rowCfr + penalty + coefs.pc + parseFloat(taxUSD)) * (6080 / row.nar);
+            const delta = evaluation - iciEvaluations[gKey];
+            dataRow.push(evaluation.toFixed(2), delta.toFixed(2));
+        });
+        
+        exportData.push(dataRow);
+    });
+    
+    const ws = XLSX.utils.aoa_to_sheet(exportData);
+    
+    // 5. 单元格合并逻辑
+    ws['!merges'] = [
+        { s: {r:0, c:0}, e: {r:0, c:17} }
     ];
     
-    const ws1 = XLSX.utils.aoa_to_sheet(headerData);
-    const ws2 = XLSX.utils.aoa_to_sheet(evalData);
+    // 纵向合并前8列的基础属性表头
+    for(let c=0; c<=7; c++) {
+        ws['!merges'].push({ s: {r:3, c:c}, e: {r:4, c:c} });
+    }
     
-    XLSX.utils.book_append_sheet(wb, ws1, '기준파라미터');
-    XLSX.utils.book_append_sheet(wb, ws2, '평가표');
+    // 横向合并各发电厂的表头标题
+    let colIdx = 8;
+    targetGencos.forEach(() => {
+        ws['!merges'].push({ s: {r:3, c:colIdx}, e: {r:3, c:colIdx+1} });
+        colIdx += 2;
+    });
     
+    // 6. 精细调整各列宽度
+    ws['!cols'] = [
+        {wpx: 40}, {wpx: 120}, {wpx: 120}, {wpx: 120}, {wpx: 80}, {wpx: 80}, {wpx: 80}, {wpx: 80}
+    ];
+    for(let i=0; i<10; i++) ws['!cols'].push({wpx: 90});
+    
+    XLSX.utils.book_append_sheet(wb, ws, '공동입찰 종합결과');
+    
+    // 触发下载
     const batchName = document.getElementById('batchName').value.trim() || '입찰평가';
     const date = new Date().toISOString().split('T')[0];
-    const filename = `석탄입찰평가_${batchName}_${date}.xlsx`;
+    const filename = `공동입찰_종합결과_${batchName}_${date}.xlsx`;
     
     XLSX.writeFile(wb, filename);
-    showToast('Excel 파일이 내보내졌습니다', 'success');
+    showToast('Excel 파일이 성공적으로 내보내졌습니다!', 'success');
 }
 
 // ==================== 모달 제어 ====================

@@ -54,15 +54,20 @@ class CoalBiddingAPI {
     }
 
     try {
-      const params = new URLSearchParams({
+      // 将数据打包到请求体 (Body) 中，而不是 URL 里
+      const bodyData = new URLSearchParams({
         action: action,
         userEmail: this.userEmail || '',
         data: JSON.stringify(data)
       });
 
-      const response = await fetch(`${this.baseUrl}?${params.toString()}`, {
+      const response = await fetch(this.baseUrl, {
         method: 'POST',
-        mode: 'cors'
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: bodyData.toString()
       });
 
       return await response.json();
@@ -101,11 +106,27 @@ class CoalBiddingAPI {
   }
 
   isAdmin() {
-    return this.userInfo?.isAdmin || false;
+    // 首先检查 API 返回的 isAdmin
+    if (this.userInfo?.isAdmin === true) {
+        return true;
+    }
+    // 备用检查：如果是管理员角色
+    if (this.userInfo?.role === 'admin') {
+        return true;
+    }
+    return false;
   }
 
   canEditICI() {
-    return this.userInfo?.permissions?.canEditICI || false;
+    // 首先检查 API 返回的权限
+    if (this.userInfo?.permissions?.canEditICI === true) {
+        return true;
+    }
+    // 备用检查：如果是管理员角色
+    if (this.userInfo?.role === 'admin') {
+        return true;
+    }
+    return false;
   }
 
   canCreateOfficialBid() {

@@ -1030,24 +1030,3 @@ body {
         border: 1px solid var(--gray-300);
     }
 }
-/* 适配手机端的样式 */
-@media screen and (max-width: 600px) {
-    /* 让表格容器可以左右滑动 */
-    .table-container, table {
-        display: block;
-        width: 100%;
-        overflow-x: auto;
-        white-space: nowrap; /* 防止内容折行 */
-    }
-    
-    /* 让输入框大一点，方便手指点击 */
-    input, button {
-        padding: 12px !important;
-        font-size: 16px !important; /* 防止 iOS 自动缩放 */
-    }
-
-    /* 标题文字稍微缩小一点 */
-    h1 {
-        font-size: 1.5rem;
-    }
-}
