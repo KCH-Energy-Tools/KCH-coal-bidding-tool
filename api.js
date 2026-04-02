@@ -115,6 +115,7 @@ class CoalBiddingAPI {
 
   canEditICI() {
     if (localStorage.getItem('coal_user_role') === 'admin') return true;
+    if (this.userInfo?.isAdmin === true) return true;
     if (this.userInfo?.permissions?.canEditICI === true) return true;
     if (this.userInfo?.role === 'admin') return true;
     return false;
@@ -122,6 +123,7 @@ class CoalBiddingAPI {
 
   canCreateOfficialBid() {
     if (localStorage.getItem('coal_user_role') === 'admin') return true;
+    if (this.userInfo?.isAdmin === true) return true;
     return this.userInfo?.permissions?.canCreateOfficialBid || false;
   }
 
