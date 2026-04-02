@@ -415,51 +415,22 @@ body {
     background: white;
 }
 
-.col-action {
-    width: 50px;
-}
-
-.col-mine {
-    min-width: 180px;
-}
-
-.col-num {
-    width: 80px;
-}
-
-.col-result {
-    width: 80px;
-    font-weight: 600;
-}
+.col-action { width: 50px; }
+.col-mine { min-width: 180px; }
+.col-num { width: 80px; }
+.col-result { width: 80px; font-weight: 600; }
 
 .result-cell {
     font-weight: 600;
     font-family: 'Consolas', 'Monaco', monospace;
 }
 
-.row-best {
-    background: var(--success-light) !important;
-}
-
-.row-best td {
-    border-bottom-color: var(--success);
-}
-
-.row-high {
-    background: var(--danger-light) !important;
-}
-
-.row-high td {
-    border-bottom-color: var(--danger);
-}
-
-.delta-positive {
-    color: var(--danger);
-}
-
-.delta-negative {
-    color: var(--success);
-}
+.row-best { background: var(--success-light) !important; }
+.row-best td { border-bottom-color: var(--success); }
+.row-high { background: var(--danger-light) !important; }
+.row-high td { border-bottom-color: var(--danger); }
+.delta-positive { color: var(--danger); }
+.delta-negative { color: var(--success); }
 
 .btn-delete-row {
     background: var(--danger);
@@ -475,9 +446,7 @@ body {
     justify-content: center;
 }
 
-.btn-delete-row:hover {
-    background: #dc2626;
-}
+.btn-delete-row:hover { background: #dc2626; }
 
 /* 汇总区域 */
 .summary-section {
@@ -495,21 +464,9 @@ body {
     text-align: center;
 }
 
-.summary-card.best {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-}
-
-.summary-card.avg,
-.summary-card.baseline {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-}
-
-.summary-card.count {
-    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
-    color: white;
-}
+.summary-card.best { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+.summary-card.avg, .summary-card.baseline { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; }
+.summary-card.count { background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%); color: white; }
 
 .summary-card .label {
     display: block;
@@ -532,9 +489,7 @@ body {
 }
 
 /* 矿山数据库 */
-.mine-db-panel {
-    margin-top: 15px;
-}
+.mine-db-panel { margin-top: 15px; }
 
 .mine-db-list {
     display: grid;
@@ -553,22 +508,9 @@ body {
     transition: all 0.2s;
 }
 
-.mine-db-item:hover {
-    background: var(--gray-100);
-    border-color: var(--primary);
-}
-
-.mine-db-item .mine-name {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--gray-800);
-}
-
-.mine-db-item .mine-info {
-    font-size: 0.75rem;
-    color: var(--gray-500);
-    margin-top: 2px;
-}
+.mine-db-item:hover { background: var(--gray-100); border-color: var(--primary); }
+.mine-db-item .mine-name { font-weight: 600; font-size: 0.9rem; color: var(--gray-800); }
+.mine-db-item .mine-info { font-size: 0.75rem; color: var(--gray-500); margin-top: 2px; }
 
 /* 模态框 */
 .modal {
@@ -584,9 +526,7 @@ body {
     justify-content: center;
 }
 
-.modal.active {
-    display: flex;
-}
+.modal.active { display: flex; }
 
 .modal-content {
     background: white;
@@ -598,9 +538,7 @@ body {
     box-shadow: var(--shadow-lg);
 }
 
-.modal-content.modal-large {
-    max-width: 900px;
-}
+.modal-content.modal-large { max-width: 900px; }
 
 .modal-header {
     display: flex;
@@ -610,10 +548,7 @@ body {
     border-bottom: 1px solid var(--gray-200);
 }
 
-.modal-header h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
+.modal-header h3 { font-size: 1.1rem; font-weight: 600; }
 
 .modal-close {
     background: none;
@@ -625,408 +560,224 @@ body {
     line-height: 1;
 }
 
-.modal-close:hover {
-    color: var(--gray-600);
-}
-
-.modal-body {
-    padding: 20px;
-    max-height: calc(80vh - 100px);
-    overflow-y: auto;
-}
+.modal-close:hover { color: var(--gray-600); }
+.modal-body { padding: 20px; max-height: calc(80vh - 100px); overflow-y: auto; }
 
 /* 批次列表 */
-.batch-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.batch-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: var(--gray-50);
-    border-radius: var(--radius);
-    border: 1px solid var(--gray-200);
-}
-
-.batch-item:hover {
-    background: var(--gray-100);
-}
-
-.batch-item-info .batch-name {
-    font-weight: 600;
-    color: var(--gray-800);
-}
-
-.batch-item-info .batch-date {
-    font-size: 0.8rem;
-    color: var(--gray-500);
-}
-
-.batch-item-actions {
-    display: flex;
-    gap: 8px;
-}
+.batch-list { display: flex; flex-direction: column; gap: 10px; }
+.batch-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--gray-200); }
+.batch-item:hover { background: var(--gray-100); }
+.batch-item-info .batch-name { font-weight: 600; color: var(--gray-800); }
+.batch-item-info .batch-date { font-size: 0.8rem; color: var(--gray-500); }
+.batch-item-actions { display: flex; gap: 8px; }
 
 /* 批次对比 */
-.compare-selectors {
-    display: flex;
-    align-items: flex-end;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.compare-select {
-    flex: 1;
-}
-
-.compare-select label {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--gray-600);
-    margin-bottom: 5px;
-}
-
-.compare-select select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-}
-
-.compare-vs {
-    font-weight: 700;
-    color: var(--gray-400);
-    padding-bottom: 10px;
-}
-
-.compare-results table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-}
-
-.compare-results th,
-.compare-results td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.compare-results th {
-    background: var(--gray-100);
-    font-weight: 600;
-}
-
-.compare-results .change-up {
-    color: var(--danger);
-}
-
-.compare-results .change-down {
-    color: var(--success);
-}
+.compare-selectors { display: flex; align-items: flex-end; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--gray-200); }
+.compare-select { flex: 1; }
+.compare-select label { display: block; font-size: 0.8rem; color: var(--gray-600); margin-bottom: 5px; }
+.compare-select select { width: 100%; padding: 10px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 0.9rem; }
+.compare-vs { font-weight: 700; color: var(--gray-400); padding-bottom: 10px; }
+.compare-results table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.compare-results th, .compare-results td { padding: 10px; text-align: center; border-bottom: 1px solid var(--gray-200); }
+.compare-results th { background: var(--gray-100); font-weight: 600; }
+.compare-results .change-up { color: var(--danger); }
+.compare-results .change-down { color: var(--success); }
 
 /* 空状态 */
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--gray-400);
-}
+.empty-state { text-align: center; padding: 40px 20px; color: var(--gray-400); }
+.empty-state-icon { font-size: 3rem; margin-bottom: 10px; }
 
-.empty-state-icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
+/* 动画 */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.eval-table tbody tr { animation: fadeIn 0.3s ease-out; }
 
-/* 响应式 */
+/* 登录遮罩 */
+.login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1f2937 0%, #111827 100%); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+.login-overlay.hidden { display: none; }
+.login-box { background: white; padding: 40px 50px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-lg); max-width: 400px; width: 90%; }
+.login-box h2 { margin-bottom: 10px; color: var(--gray-800); }
+.login-box p { color: var(--gray-500); margin-bottom: 20px; }
+.login-box input { width: 100%; padding: 12px 15px; border: 2px solid var(--gray-300); border-radius: var(--radius); font-size: 1rem; margin-bottom: 15px; }
+.login-box input:focus { outline: none; border-color: var(--primary); }
+.login-box button { width: 100%; padding: 12px; font-size: 1rem; }
+.login-hint { font-size: 0.8rem; color: var(--gray-400); margin-top: 15px; }
+
+/* 用户信息 */
+.user-badge { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; }
+.user-email { font-size: 0.85rem; color: var(--gray-300); }
+.admin-tag { background: var(--warning); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+
+/* 同步状态 */
+.sync-status { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--gray-400); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; }
+.sync-dot.online { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.sync-dot.offline { background: var(--gray-500); }
+
+/* 管理员专属元素 */
+.admin-only { display: none; }
+.admin-only.visible { display: block; }
+.admin-only.visible-flex { display: flex; }
+
+/* 保存区块 & 内联面板 */
+.save-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--gray-300); }
+.save-section h4 { font-size: 0.9rem; color: var(--gray-700); margin-bottom: 5px; }
+.save-section .hint, .hint { font-size: 0.75rem; color: var(--gray-500); margin-bottom: 10px; font-weight: normal; }
+.panel-header-inline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-100); }
+.panel-header-inline h2 { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.btn-sync { background: var(--gray-200); color: var(--gray-600); padding: 4px 8px; font-size: 0.8rem; }
+.btn-full { width: 100%; }
+
+/* Toast 消息 */
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--gray-800); color: white; padding: 12px 20px; border-radius: var(--radius); box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease-out; max-width: 350px; }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.warning { background: var(--warning); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ====================================================
+   🖥️ 响应式设计: 平板设备 (Tablet)
+   ==================================================== */
 @media (max-width: 1200px) {
     .main-content {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* 主区域铺满整行 */
     }
-
     .sidebar {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr); /* 侧边栏平铺到上方 */
     }
 }
 
+/* ====================================================
+   📱 响应式设计: 手机端深度适配 (Mobile Optimization) - 终极修复版
+   ==================================================== */
 @media (max-width: 768px) {
+    /* 1. 布局重组 */
     .sidebar {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; 
     }
 
     .header {
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
         text-align: center;
+        padding: 15px;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: center; /* 居中更好看 */
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .company-badge, .date-display {
+        display: none; 
     }
 
     .summary-section {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; 
     }
 
+    /* 💡 修复点 1：让罚款系数在手机上排成 3 列，不再是单列糖葫芦 */
     .coef-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 10px;
     }
-}
 
-/* 动画 */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.eval-table tbody tr {
-    animation: fadeIn 0.3s ease-out;
-}
-
-/* 登录遮罩 */
-.login-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.login-overlay.hidden {
-    display: none;
-}
-
-.login-box {
-    background: white;
-    padding: 40px 50px;
-    border-radius: var(--radius-lg);
-    text-align: center;
-    box-shadow: var(--shadow-lg);
-    max-width: 400px;
-    width: 90%;
-}
-
-.login-box h2 {
-    margin-bottom: 10px;
-    color: var(--gray-800);
-}
-
-.login-box p {
-    color: var(--gray-500);
-    margin-bottom: 20px;
-}
-
-.login-box input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid var(--gray-300);
-    border-radius: var(--radius);
-    font-size: 1rem;
-    margin-bottom: 15px;
-}
-
-.login-box input:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-
-.login-box button {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-}
-
-.login-hint {
-    font-size: 0.8rem;
-    color: var(--gray-400);
-    margin-top: 15px;
-}
-
-/* 用户信息 */
-.user-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.1);
-    padding: 6px 12px;
-    border-radius: 20px;
-}
-
-.user-email {
-    font-size: 0.85rem;
-    color: var(--gray-300);
-}
-
-.admin-tag {
-    background: var(--warning);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-/* 同步状态 */
-.sync-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
-    color: var(--gray-400);
-}
-
-.sync-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
-.sync-dot.online {
-    background: var(--success);
-    box-shadow: 0 0 6px var(--success);
-}
-
-.sync-dot.offline {
-    background: var(--gray-500);
-}
-
-/* 管理员专属元素 */
-.admin-only {
-    display: none;
-}
-
-.admin-only.visible {
-    display: block;
-}
-
-.admin-only.visible-flex {
-    display: flex;
-}
-
-/* 保存区块 */
-.save-section {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px dashed var(--gray-300);
-}
-
-.save-section h4 {
-    font-size: 0.9rem;
-    color: var(--gray-700);
-    margin-bottom: 5px;
-}
-
-.save-section .hint {
-    font-size: 0.75rem;
-    color: var(--gray-500);
-    margin-bottom: 10px;
-}
-
-.hint {
-    font-size: 0.75rem;
-    color: var(--gray-500);
-    font-weight: normal;
-}
-
-/* 面板头部内联 */
-.panel-header-inline {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--gray-100);
-}
-
-.panel-header-inline h2 {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-}
-
-.btn-sync {
-    background: var(--gray-200);
-    color: var(--gray-600);
-    padding: 4px 8px;
-    font-size: 0.8rem;
-}
-
-.btn-full {
-    width: 100%;
-}
-
-/* Toast 消息 */
-.toast-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 3000;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.toast {
-    background: var(--gray-800);
-    color: white;
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    animation: slideIn 0.3s ease-out;
-    max-width: 350px;
-}
-
-.toast.success {
-    background: var(--success);
-}
-
-.toast.error {
-    background: var(--danger);
-}
-
-.toast.warning {
-    background: var(--warning);
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
+    /* 💡 修复点 2：保持左右两列并排（FOBT/Freight等），节约手机屏幕空间 */
+   .form-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; /* 绝对平分两列 */
+        gap: 10px !important;
+        width: 100%;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+    
+    .form-group.half {
+        min-width: 0 !important; /* 核心魔法：强迫输入框允许被压缩，绝不撑破屏幕 */
+        width: 100%;
+        margin-bottom: 0;
     }
-}
 
-/* 打印样式 */
-@media print {
-    body {
+    /* 2. 核心大表格适配 (横向丝滑滑动 + 冻结左侧首两列) */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; 
+        margin: 0 -20px; 
+        padding: 0 20px;
+    }
+    
+    /* 冻结第一列（删除按钮） */
+    .eval-table th:nth-child(1),
+    .eval-table td:nth-child(1) {
+        position: sticky;
+        left: 0;
         background: white;
+        z-index: 10;
+    }
+    
+    /* 冻结第二列（矿山名称）并增加右侧阴影，营造立体感 */
+    .eval-table th:nth-child(2),
+    .eval-table td:nth-child(2) {
+        position: sticky;
+        left: 45px; /* 避开第一列删除按钮的宽度 */
+        background: white;
+        z-index: 10;
+        box-shadow: 3px 0 5px rgba(0,0,0,0.08); 
+    }
+    
+    /* 冻结表头需要更高层级，且背景变灰区分 */
+    .eval-table th:nth-child(1),
+    .eval-table th:nth-child(2) {
+        background: var(--gray-100);
+        z-index: 11;
     }
 
-    .sidebar,
+    /* 防止表格文字过长 */
+    .col-num, .col-result {
+        min-width: 70px;
+    }
+
+    /* 3. 增强触摸体验 (防止误触 & 防止 iPhone 自动放大屏幕) */
+    .form-group input, 
+    .form-group select, 
     .btn,
-    .panel-actions,
-    .login-overlay,
-    .toast-container {
-        display: none;
+    .eval-table input,
+    .eval-table select {
+        min-height: 44px; /* 苹果推荐触摸高度 */
+        font-size: 16px;  /* 字体>=16px可以防止iOS点击自动Zoom In */
     }
 
-    .main-content {
-        grid-template-columns: 1fr;
+    /* 4. 矿山数据库列表适配 */
+    .mine-db-list {
+        grid-template-columns: 1fr; /* 单列显示 */
+        max-height: 300px;
+    }
+    
+    .mine-db-item {
+        padding: 15px; /* 扩大点击面积 */
     }
 
-    .panel {
-        box-shadow: none;
-        border: 1px solid var(--gray-300);
+    /* 5. 模态框优化 */
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+        margin: 20px auto;
     }
+    
+    /* 💡 只有弹窗里的表单才需要上下排列，不影响左侧边栏 */
+    .modal .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* ====================================================
+   🖨️ 打印样式 (Print)
+   ==================================================== */
+@media print {
+    body { background: white; }
+    .sidebar, .btn, .panel-actions, .login-overlay, .toast-container { display: none; }
+    .main-content { grid-template-columns: 1fr; }
+    .panel { box-shadow: none; border: 1px solid var(--gray-300); }
 }

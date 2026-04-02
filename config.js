@@ -4,8 +4,8 @@
  */
 
 const CONFIG = {
-  // Google Apps Script Web App URL
-  SHEETS_API_URL: 'https://script.google.com/a/macros/kchenergy.com/s/AKfycbzsoTX69TvbAOUzJeHtICJkC20gGuv6r2E6-wjtyQZKPMjUtTxDILUdd_j2E454Xevu/exec',
+  // Google Apps Script Web App URL (已更新为你的最新链接)
+  SHEETS_API_URL: 'https://script.google.com/macros/s/AKfycbwmQ-zZtEyV19OXb_3Y2c_CIQBVmKfwkgQRzoQjDbWkSDudqcTbcTsopS2HBRzPwyRx/exec',
   
   // Google Sheet ID
   SHEET_ID: '1i9Mhos5GLV21MrZyu0VCM-HKvAvz8O-TzG5VtwmzGnk',
@@ -19,8 +19,8 @@ const CONFIG = {
   // 自动保存间隔（毫秒）
   AUTO_SAVE_INTERVAL: 30000,
   
-  // 调试模式
-  DEBUG: false
+  // 调试模式 (我帮你把这里改成了 true，这样如果有问题，按 F12 可以在控制台看到更详细的报错)
+  DEBUG: true
 };
 
 // 检查配置是否完整

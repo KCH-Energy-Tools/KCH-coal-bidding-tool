@@ -105,31 +105,23 @@ class CoalBiddingAPI {
     return result;
   }
 
+  // 💡 [核心修改] 强制信任本地登录角色，不再被云端延迟拦截
   isAdmin() {
-    // 首先检查 API 返回的 isAdmin
-    if (this.userInfo?.isAdmin === true) {
-        return true;
-    }
-    // 备用检查：如果是管理员角色
-    if (this.userInfo?.role === 'admin') {
-        return true;
-    }
+    if (localStorage.getItem('coal_user_role') === 'admin') return true;
+    if (this.userInfo?.isAdmin === true) return true;
+    if (this.userInfo?.role === 'admin') return true;
     return false;
   }
 
   canEditICI() {
-    // 首先检查 API 返回的权限
-    if (this.userInfo?.permissions?.canEditICI === true) {
-        return true;
-    }
-    // 备用检查：如果是管理员角色
-    if (this.userInfo?.role === 'admin') {
-        return true;
-    }
+    if (localStorage.getItem('coal_user_role') === 'admin') return true;
+    if (this.userInfo?.permissions?.canEditICI === true) return true;
+    if (this.userInfo?.role === 'admin') return true;
     return false;
   }
 
   canCreateOfficialBid() {
+    if (localStorage.getItem('coal_user_role') === 'admin') return true;
     return this.userInfo?.permissions?.canCreateOfficialBid || false;
   }
 
